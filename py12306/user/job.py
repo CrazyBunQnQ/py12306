@@ -190,9 +190,11 @@ class UserJob:
                 result = json.loads(result)
                 self.session.cookies.update({
                     'RAIL_EXPIRATION': result.get('exp'),
-                    'RAIL_DEVICEID': result.get('dfp'),
+                    # 'RAIL_DEVICEID': result.get('dfp'),
+                    'RAIL_DEVICEID': 'HsDLiP_ZUQA0GYIJVQX9a0Skokz5aVNad7ehftXmykVi1Je9_GP90ASwvvIeOSzXUTtyf0l32NVO1hxjrnZddfFSa19oQMf1V4n4jE8J7ziULdDCTEglxOjay1Gue4UaeGx-t6t9HGpdhQKZ0llxfNHPiUlQxbZ8',
                 })
             except:
+                print('aaa')
                 return False
 
     def request_alg_id(self):
