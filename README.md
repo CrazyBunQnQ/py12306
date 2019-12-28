@@ -1,10 +1,6 @@
 # 🚂 py12306 购票助手
 分布式，多账号，多任务购票
 
-## 前言
-今年回家的票明显要难买很多，早早就答应了父母今年的票没问题，到现在一张票没买到，虽然家里已经订了汽车票，让我不用操心，但是想想他们一行还有小孩，心还是很伤的。
-这段时间从 12306Bypass 到 testerSunshine 大佬写的 [12306](https://github.com/testerSunshine/12306)，还是没买到票，索性就自己写了一个，希望也能帮助到更多人
-
 ## Features
 - [x] 多日期查询余票
 - [x] 自动打码下单
@@ -18,7 +14,7 @@
 - [x] 邮件通知
 - [x] Web 管理页面
 - [x] 微信消息通知
-- [ ] 代理池支持
+- [ ] 代理池支持 ([pyproxy-async](https://github.com/pjialin/pyproxy-async))
 
 ## 使用
 py12306 需要运行在 python 3.6 以上版本（其它版本暂未测试)
@@ -36,9 +32,9 @@ cp env.py.example env.py
 ```
 自动打码
 
-目前支持免费打码，和若快打码
+验证码可以本地识别，所用的模型和算法均来自 [https://github.com/zhaipro/easy12306](https://github.com/zhaipro/easy12306) 十分感谢！
 
-注：免费打码无法保证持续可用，如失效请手动切换到若快平台，需要先到 [http://www.ruokuai.com](http://www.ruokuai.com/login) 注册一个账号后填写到配置中
+~~注：免费打码无法保证持续可用，如失效请手动切换到若快平台，需要先到 [http://www.ruokuai.com](http://www.ruokuai.com/login) 注册一个账号后填写到配置中~~（若快已停止服务，目前只能设置**free**打码模式）
 
 语音通知
 
@@ -156,6 +152,7 @@ docker-compose up -d
 ## Thanks
 - 感谢大佬 [testerSunshine](https://github.com/testerSunshine/12306)，借鉴了部分实现
 - 感谢所有提供 pr 的大佬 
+- 感谢大佬 [zhaipro](https://github.com/zhaipro/easy12306) 的验证码本地识别模型与算法
 
 ## License
 

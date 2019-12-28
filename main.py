@@ -11,6 +11,7 @@ from py12306.web.web import Web
 
 def main():
     load_argvs()
+    test()
     CommonLog.print_welcome()
     App.run()
     CommonLog.print_configs()
@@ -51,7 +52,8 @@ def test():
 
 
 def load_argvs():
-    if '--test' in sys.argv or '-t' in sys.argv: test()
+    if '--test' in sys.argv or '-t' in sys.argv:
+        test()
     config_index = None
 
     if '--config' in sys.argv: config_index = sys.argv.index('--config')

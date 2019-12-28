@@ -183,6 +183,8 @@ class UserJob:
         """
         params = {"algID": self.request_alg_id(), "timestamp": int(time.time() * 1000)}
         params = dict(params, **self._get_hash_code_params())
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"}
+        self.session.headers.update(headers)
         response = self.session.get(API_GET_BROWSER_DEVICE_ID, params=params)
         if response.text.find('callbackFunction') >= 0:
             result = response.text[18:-2]
@@ -275,25 +277,25 @@ class UserJob:
             'scrColorDepth': "qmyu"
         }
         data = OrderedDict(data)
-        data_str = ''
+        d = ''
         params = {}
         for key, item in data.items():
-            data_str += key + item
+            d += key + item
             key = data_trans[key] if key in data_trans else key
             params[key] = item
-        data_str = self._encode_data_str(data_str)
-        data_str_len = len(data_str)
-        data_str_f = int(data_str_len / 3) if data_str_len % 3 == 0 else int(data_str_len / 3) + 1
-        if data_str_len >= 3:
-            data_str = data_str[data_str_f:2*data_str_f] + data_str[2*data_str_f:data_str_len] + data_str[0: data_str_f]
-        data_str = data_str[::-1]
-        data_str_tmp = ""
-        for e in range(0, len(data_str)):
-            data_str_code = ord(data_str[e])
-            data_str_tmp += chr(0) if data_str_code == 127 else chr(data_str_code + 1)
+        d_len = len(d)
+        d_f = int(d_len / 3) if d_len % 3 == 0 else int(d_len / 3) + 1
+        if d_len >= 3:
+            d = d[d_f:2 * d_f] + d[2 * d_f:d_len] + d[0: d_f]
+        d_len = len(d)
+        d_f = int(d_len / 3) if d_len % 3 == 0 else int(d_len / 3) + 1
+        if d_len >= 3:
+            d = d[2 * d_f:d_len] + d[0: d_f] + d[1 * d_f: 2 * d_f]
 
-        data_str = self._encode_data_str(data_str_tmp)
-        data_str = self._encode_string(data_str)
+        d = self._encode_data_str_v2(d)
+        d = self._encode_data_str_v2(d)
+        d = self._encode_data_str_v2(d)
+        data_str = self._encode_string(d)
         params['hashCode'] = data_str
         return params
 
@@ -305,6 +307,13 @@ class UserJob:
             data_str_f = data_str[data_str_len_tmp:2 * data_str_len_tmp]
             return data_str[2 * data_str_len_tmp:data_str_len] + data_str_e + data_str_f
         return data_str
+
+    def _encode_data_str_v2(self, d):
+        b = len(d)
+        if b % 2 == 0:
+            return d[b // 2: b] + d[0:b // 2]
+        else:
+            return d[b // 2 + 1:b] + d[b // 2] + d[0:b // 2]
 
     def _encode_string(self, str):
         import hashlib

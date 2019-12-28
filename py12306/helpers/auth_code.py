@@ -33,6 +33,7 @@ class AuthCode:
             return self.retry_get_auth_code()
 
         answer = ','.join(map(str, position))
+
         if not self.check_code(answer):
             return self.retry_get_auth_code()
         return position
