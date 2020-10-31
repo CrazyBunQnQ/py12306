@@ -2,7 +2,7 @@ import math
 import random
 
 from py12306.config import Config
-from py12306.helpers.api import API_FREE_CODE_QCR_API
+from py12306.helpers.api import *
 from py12306.helpers.request import Request
 from py12306.log.common_log import CommonLog
 from py12306.vender.ruokuai.main import RKClient
@@ -56,13 +56,22 @@ class OCR:
 
     def get_image_by_free_site(self, img):
         data = {
-            'img': img
+            'base64': img
         }
-        response = self.session.post(API_FREE_CODE_QCR_API, data=data, timeout=30)
+        response = self.session.post(API_FREE_CODE_QCR_API, json=data)
         result = response.json()
-        if result.get('msg') == 'success':
-            pos = result.get('result')
-            return self.get_image_position_by_offset(pos)
+        if result.get('success') and result.get('data.check'):
+            check_data = {
+                'check': result.get('data.check'),
+                'img_buf': img,
+                'logon': 1,
+                'type': 'D'
+            }
+            check_response = self.session.post(API_FREE_CODE_QCR_API_CHECK, json=check_data)
+            check_result = check_response.json()
+            if check_result.get('res'):
+                position = check_result.get('res')
+                return position.replace('(', '').replace(')', '').split(',')
 
         CommonLog.print_auto_code_fail(CommonLog.MESSAGE_GET_RESPONSE_FROM_FREE_AUTO_CODE)
         return None

@@ -123,9 +123,9 @@ class UserJob:
             'password': self.password,
             'appid': 'otn'
         }
+        self.request_device_id()
         answer = AuthCode.get_auth_code(self.session)
         data['answer'] = answer
-        self.request_device_id()
         response = self.session.post(API_BASE_LOGIN.get('url'), data)
         result = response.json()
         if result.get('result_code') == 0:  # 登录成功
@@ -161,10 +161,7 @@ class UserJob:
         return is_login
 
     def auth_uamtk(self):
-        response = self.session.post(API_AUTH_UAMTK.get('url'), {'appid': 'otn'}, headers={
-            'Referer': 'https://kyfw.12306.cn/otn/passport?redirect=/otn/login/userLogin',
-            'Origin': 'https://kyfw.12306.cn'
-        })
+        response = self.session.post(API_AUTH_UAMTK.get('url'), {'appid': 'otn'})
         result = response.json()
         if result.get('newapptk'):
             return result.get('newapptk')
@@ -184,27 +181,136 @@ class UserJob:
         获取加密后的浏览器特征 ID
         :return:
         """
-        response = self.session.get(API_GET_BROWSER_DEVICE_ID)
-        if response.status_code == 200:
+        params = {"algID": self.request_alg_id(), "timestamp": int(time.time() * 1000)}
+        params = dict(params, **self._get_hash_code_params())
+        response = self.session.get(API_GET_BROWSER_DEVICE_ID, params=params)
+        if response.text.find('callbackFunction') >= 0:
+            result = response.text[18:-2]
             try:
-                result = json.loads(response.text)
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-                }
-                from base64 import b64decode
-                self.session.headers.update(headers)
-                response = self.session.get(b64decode(result['id']).decode())
-                if response.text.find('callbackFunction') >= 0:
-                    result = response.text[18:-2]
                 result = json.loads(result)
                 self.session.cookies.update({
                     'RAIL_EXPIRATION': result.get('exp'),
-                    # 'RAIL_DEVICEID': result.get('dfp'),
-                    'RAIL_DEVICEID': 'HsDLiP_ZUQA0GYIJVQX9a0Skokz5aVNad7ehftXmykVi1Je9_GP90ASwvvIeOSzXUTtyf0l32NVO1hxjrnZddfFSa19oQMf1V4n4jE8J7ziULdDCTEglxOjay1Gue4UaeGx-t6t9HGpdhQKZ0llxfNHPiUlQxbZ8',
+                    'RAIL_DEVICEID': result.get('dfp'),
                 })
             except:
-                print('aaa')
                 return False
+
+    def request_alg_id(self):
+        response = self.session.get("https://kyfw.12306.cn/otn/HttpZF/GetJS")
+        result = re.search(r'algID\\x3d(.*?)\\x26', response.text)
+        try:
+            return result.group(1)
+        except (IndexError, AttributeError) as e:
+            pass
+        return ""
+
+    def _get_hash_code_params(self):
+        from collections import OrderedDict
+        data = {
+            'adblock': '0',
+            'browserLanguage': 'en-US',
+            'cookieEnabled': '1',
+            'custID': '133',
+            'doNotTrack': 'unknown',
+            'flashVersion': '0',
+            'javaEnabled': '0',
+            'jsFonts': 'c227b88b01f5c513710d4b9f16a5ce52',
+            'localCode': '3232236206',
+            'mimeTypes': '52d67b2a5aa5e031084733d5006cc664',
+            'os': 'MacIntel',
+            'platform': 'WEB',
+            'plugins': 'd22ca0b81584fbea62237b14bd04c866',
+            'scrAvailSize': str(random.randint(500, 1000)) + 'x1920',
+            'srcScreenSize': '24xx1080x1920',
+            'storeDb': 'i1l1o1s1',
+            'timeZone': '-8',
+            'touchSupport': '99115dfb07133750ba677d055874de87',
+            'userAgent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.' + str(
+                random.randint(
+                    5000, 7000)) + '.0 Safari/537.36',
+            'webSmartID': 'f4e3b7b14cc647e30a6267028ad54c56',
+        }
+        data_trans = {
+            'browserVersion': 'd435',
+            'touchSupport': 'wNLf',
+            'systemLanguage': 'e6OK',
+            'scrWidth': 'ssI5',
+            'openDatabase': 'V8vl',
+            'scrAvailSize': 'TeRS',
+            'hasLiedResolution': '3neK',
+            'hasLiedOs': 'ci5c',
+            'timeZone': 'q5aJ',
+            'userAgent': '0aew',
+            'userLanguage': 'hLzX',
+            'jsFonts': 'EOQP',
+            'scrAvailHeight': '88tV',
+            'browserName': '-UVA',
+            'cookieCode': 'VySQ',
+            'online': '9vyE',
+            'scrAvailWidth': 'E-lJ',
+            'flashVersion': 'dzuS',
+            'scrDeviceXDPI': '3jCe',
+            'srcScreenSize': 'tOHY',
+            'storeDb': 'Fvje',
+            'doNotTrack': 'VEek',
+            'mimeTypes': 'jp76',
+            'sessionStorage': 'HVia',
+            'cookieEnabled': 'VPIf',
+            'os': 'hAqN',
+            'hasLiedLanguages': 'j5po',
+            'hasLiedBrowser': '2xC5',
+            'webSmartID': 'E3gR',
+            'appcodeName': 'qT7b',
+            'javaEnabled': 'yD16',
+            'plugins': 'ks0Q',
+            'appMinorVersion': 'qBVW',
+            'cpuClass': 'Md7A',
+            'indexedDb': '3sw-',
+            'adblock': 'FMQw',
+            'localCode': 'lEnu',
+            'browserLanguage': 'q4f3',
+            'scrHeight': '5Jwy',
+            'localStorage': 'XM7l',
+            'historyList': 'kU5z',
+            'scrColorDepth': "qmyu"
+        }
+        data = OrderedDict(data)
+        data_str = ''
+        params = {}
+        for key, item in data.items():
+            data_str += key + item
+            key = data_trans[key] if key in data_trans else key
+            params[key] = item
+        data_str = self._encode_data_str(data_str)
+        data_str_len = len(data_str)
+        data_str_f = int(data_str_len / 3) if data_str_len % 3 == 0 else int(data_str_len / 3) + 1
+        if data_str_len >= 3:
+            data_str = data_str[data_str_f:2*data_str_f] + data_str[2*data_str_f:data_str_len] + data_str[0: data_str_f]
+        data_str = data_str[::-1]
+        data_str_tmp = ""
+        for e in range(0, len(data_str)):
+            data_str_code = ord(data_str[e])
+            data_str_tmp += chr(0) if data_str_code == 127 else chr(data_str_code + 1)
+
+        data_str = self._encode_data_str(data_str_tmp)
+        data_str = self._encode_string(data_str)
+        params['hashCode'] = data_str
+        return params
+
+    def _encode_data_str(self, data_str):
+        data_str_len = len(data_str)
+        data_str_len_tmp = int(data_str_len / 3) if data_str_len % 3 == 0 else int(data_str_len / 3) + 1
+        if data_str_len >= 3:
+            data_str_e = data_str[0:data_str_len_tmp]
+            data_str_f = data_str[data_str_len_tmp:2 * data_str_len_tmp]
+            return data_str[2 * data_str_len_tmp:data_str_len] + data_str_e + data_str_f
+        return data_str
+
+    def _encode_string(self, str):
+        import hashlib
+        import base64
+        result = base64.b64encode(hashlib.sha256(str.encode()).digest()).decode()
+        return result.replace('+', '-').replace('/', '_').replace('=', '')
 
     def login_did_success(self):
         """
@@ -356,8 +462,7 @@ class UserJob:
             name: '项羽',
             type: 1,
             id_card: 0000000000000000000,
-            type_text: '成人',
-            enc_str: 'aaaaaa'
+            type_text: '成人'
         }]
         """
         self.get_user_passengers()
@@ -365,11 +470,6 @@ class UserJob:
         for member in members:
             is_member_code = is_number(member)
             if not is_member_code:
-                if member[0] == "*":
-                    audlt = 1
-                    member = member[1:]
-                else:
-                    audlt = 0
                 child_check = array_dict_find_by_key_value(results, 'name', member)
             if not is_member_code and child_check:
                 new_member = child_check.copy()
@@ -380,8 +480,6 @@ class UserJob:
                     passenger = array_dict_find_by_key_value(self.passengers, 'code', member)
                 else:
                     passenger = array_dict_find_by_key_value(self.passengers, 'passenger_name', member)
-                    if audlt:
-                        passenger['passenger_type'] = UserType.ADULT
                 if not passenger:
                     UserLog.add_quick_log(
                         UserLog.MESSAGE_USER_PASSENGERS_IS_INVALID.format(self.user_name, member)).flush()
@@ -392,8 +490,7 @@ class UserJob:
                     'id_card_type': passenger.get('passenger_id_type_code'),
                     'mobile': passenger.get('mobile_no'),
                     'type': passenger.get('passenger_type'),
-                    'type_text': dict_find_key_by_value(UserType.dicts, int(passenger.get('passenger_type'))),
-                    'enc_str': passenger.get('allEncStr')
+                    'type_text': dict_find_key_by_value(UserType.dicts, int(passenger.get('passenger_type')))
                 }
             results.append(new_member)
 
@@ -419,6 +516,6 @@ class UserJob:
             self.ticket_info_for_passenger_form = json.loads(form.groups()[0].replace("'", '"'))
             self.order_request_dto = json.loads(order.groups()[0].replace("'", '"'))
         except:
-            return False  # TODO Error
+            pass  # TODO Error
 
         return True

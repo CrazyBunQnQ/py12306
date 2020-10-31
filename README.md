@@ -1,6 +1,10 @@
 # 🚂 py12306 购票助手
 分布式，多账号，多任务购票
 
+## 前言
+今年回家的票明显要难买很多，早早就答应了父母今年的票没问题，到现在一张票没买到，虽然家里已经订了汽车票，让我不用操心，但是想想他们一行还有小孩，心还是很伤的。
+这段时间从 12306Bypass 到 testerSunshine 大佬写的 [12306](https://github.com/testerSunshine/12306)，还是没买到票，索性就自己写了一个，希望也能帮助到更多人
+
 ## Features
 - [x] 多日期查询余票
 - [x] 自动打码下单
@@ -14,7 +18,7 @@
 - [x] 邮件通知
 - [x] Web 管理页面
 - [x] 微信消息通知
-- [ ] 代理池支持 ([pyproxy-async](https://github.com/pjialin/pyproxy-async))
+- [ ] 代理池支持
 
 ## 使用
 py12306 需要运行在 python 3.6 以上版本（其它版本暂未测试)
@@ -32,8 +36,9 @@ cp env.py.example env.py
 ```
 自动打码
 
-（若快已停止服务，目前只能设置**free**打码模式）
-free 已对接到打码共享平台，[https://py12306-helper.pjialin.com](https://py12306-helper.pjialin.com/)，欢迎参与分享
+目前支持免费打码，和若快打码
+
+注：免费打码无法保证持续可用，如失效请手动切换到若快平台，需要先到 [http://www.ruokuai.com](http://www.ruokuai.com/login) 注册一个账号后填写到配置中
 
 语音通知
 
@@ -143,7 +148,7 @@ docker-compose up -d
 ### 关于防封
 目前查询和登录操作是分开的，查询是不依赖用户是否登录，放在 A 云 T 云容易被限制 ip，建议在其它网络环境下运行
 
-QQ 交流群 [780289875](https://jq.qq.com/?_wv=1027&k=5PgzDwV)，TG 群 [Py12306 交流](https://t.me/joinchat/F3sSegrF3x8KAmsd1mTu7w)
+交流群 [274781597](http://shang.qq.com/wpa/qunwpa?idkey=8eab0b6402096266a62263c1cd452149926adb5cba7a2b7a98a5adc65869addf)
 
 ### Online IDE
 [![在 Gitpod 中打开](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io#https://github.com/pjialin/py12306)
@@ -151,7 +156,6 @@ QQ 交流群 [780289875](https://jq.qq.com/?_wv=1027&k=5PgzDwV)，TG 群 [Py1230
 ## Thanks
 - 感谢大佬 [testerSunshine](https://github.com/testerSunshine/12306)，借鉴了部分实现
 - 感谢所有提供 pr 的大佬 
-- 感谢大佬 [zhaipro](https://github.com/zhaipro/easy12306) 的验证码本地识别模型与算法
 
 ## License
 
