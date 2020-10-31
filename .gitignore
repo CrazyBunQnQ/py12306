@@ -6,3 +6,5 @@ __pycache__
 env.py
 docker-compose.yml
 config.toml
+config_test.toml
+data/db*

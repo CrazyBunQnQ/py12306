@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
+import sys
+
+sys.path.insert(0, 'py12306')
 
 
 def main():
-    pass
+    version_check()
+    from app.app import App
+    App.start_run_loop()
 
 
-# def load_argvs():
-#     if '--test' in sys.argv or '-t' in sys.argv: test()
-#     config_index = None
-#
-#     if '--config' in sys.argv: config_index = sys.argv.index('--config')
-#     if '-c' in sys.argv: config_index = sys.argv.index('-c')
-#     if config_index:
-#         Config.CONFIG_FILE = sys.argv[config_index + 1:config_index + 2].pop()
+def version_check():
+    if sys.version_info.major < 3 or sys.version_info.minor < 6:
+        sys.exit('# Pleause use a python version that must equal to or greater than 3.6 #')
 
 
 if __name__ == '__main__':
